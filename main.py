@@ -6,6 +6,9 @@ from DQN import DQN, prepare_training_inputs
 from memory.memory import ReplayMemory
 from train_utils import to_tensor
 
+# Simulation parameter
+
+# Hyperparameter
 lr = 1e-4 * 5
 batch_size = 256
 gamma = 1.0
@@ -21,8 +24,8 @@ qnet_target = MLP(4, 2, num_neurons=[128])
 
 # initialize target network same as the main network.
 qnet_target.load_state_dict(qnet.state_dict())
-agent = DQN(4, 1, qnet=qnet, qnet_target=qnet_target, lr=lr, gamma=gamma, epsilon=1.0)
-env = gym.make('CartPole-v1')
+agent = DQN(4, 1, qnet=qnet, qnet_target=qnet_target, lr=lr, gamma=gamma, epsilon=1.0) # 하나의 agent로 각각 element에 action을 줄 수 없을듯.
+env = gym.make('CartPole-v1') # have to change!
 memory = ReplayMemory(memory_size)
 print_every = 100
 
