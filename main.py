@@ -7,7 +7,7 @@ from memory.memory import ReplayMemory
 from train_utils import to_tensor
 
 # Simulation parameter
-phase_N = 2  # Num of available phase
+phase_N = 4  # Num of available phase
 e_bit = 1  # Decide num of IRS element
 element_N = (2 ^ e_bit) ^ 2  # IRS element 2 x 2
 
@@ -49,7 +49,7 @@ for n_epi in range(total_eps):
         experience = (s,
                       torch.tensor(a).view(1, 1),
                       torch.tensor(r / 100.0).view(1, 1),
-                      torch.tensor(ns).view(1, element_N),
+                      torch.tensor(ns).view(1, element_N + 1),
                       torch.tensor(done).view(1, 1))
         memory.push(experience)
 
