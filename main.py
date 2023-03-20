@@ -7,7 +7,11 @@ from memory.memory import ReplayMemory
 from train_utils import to_tensor
 
 # Simulation parameter
-##
+phase_N = 2  # Num of available phase
+e_bit = 1  # Decide num of IRS element
+element_N = (2 ^ e_bit) ^ 2  # IRS element 2 x 2
+
+
 # Hyperparameter
 lr = 1e-4 * 5
 batch_size = 256
@@ -19,13 +23,13 @@ eps_min = 0.01
 sampling_only_until = 2000
 target_update_interval = 10
 
-qnet = MLP(4, 2, num_neurons=[128])
-qnet_target = MLP(4, 2, num_neurons=[128])
+qnet = MLP(element_N + 1, phase_N ^ element_N, num_neurons=[256])
+qnet_target = MLP(element_N + 1, phase_N ^ element_N, num_neurons=[256])
 
 # initialize target network same as the main network.
 qnet_target.load_state_dict(qnet.state_dict())
-agent = DQN(4, 1, qnet=qnet, qnet_target=qnet_target, lr=lr, gamma=gamma, epsilon=1.0) # 하나의 agent로 각각 element에 action을 줄 수 없을듯.
-env = gym.make('CartPole-v1') # have to change!
+agent = DQN(element_N + 1, 1, qnet=qnet, qnet_target=qnet_target, lr=lr, gamma=gamma, epsilon=1.0)
+env = gym.make('CartPole-v1')  # have to change!
 memory = ReplayMemory(memory_size)
 print_every = 100
 
@@ -38,14 +42,14 @@ for n_epi in range(total_eps):
     cum_r = 0
 
     while True:
-        s = to_tensor(s, size=(1, 4))
+        s = to_tensor(s, size=(1, element_N))
         a = agent.get_action(s)
         ns, r, done, info = env.step(a)
 
         experience = (s,
                       torch.tensor(a).view(1, 1),
                       torch.tensor(r / 100.0).view(1, 1),
-                      torch.tensor(ns).view(1, 4),
+                      torch.tensor(ns).view(1, element_N),
                       torch.tensor(done).view(1, 1))
         memory.push(experience)
 
