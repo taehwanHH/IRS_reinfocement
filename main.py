@@ -28,7 +28,7 @@ qnet_target = MLP(element_N + 1, phase_N ^ element_N, num_neurons=[256])
 
 # initialize target network same as the main network.
 qnet_target.load_state_dict(qnet.state_dict())
-agent = DQN(element_N + 1, 1, qnet=qnet, qnet_target=qnet_target, lr=lr, gamma=gamma, epsilon=1.0)
+agent = DQN(element_N + 1, element_N, qnet=qnet, qnet_target=qnet_target, lr=lr, gamma=gamma, epsilon=1.0)  # action_dim?
 env = gym.make('CartPole-v1')  # have to change!
 memory = ReplayMemory(memory_size)
 print_every = 100
